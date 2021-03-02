@@ -6,10 +6,10 @@ var Splines = function(canvas) {
 
     // Task 1a: fill in the Bezier control matrix
     this.B = new SimplerMatrix(
-      0,  0,  0,  0,
-      0,  0,  0,  0,
-      0,  0,  0,  0,
-      0,  0,  0,  0);
+      1,  0,  0,  0,
+     -3,  3,  0,  0,
+      3, -6,  3,  0,
+     -1,  3, -3,  1);
 
     this.dragIndex = -1; // for UI purposes
 }
@@ -17,8 +17,8 @@ var Splines = function(canvas) {
 Splines.prototype.render = function(canvas, w, h)
 {
     // Task 1b: precompute the polynomial coefficients (a_i) for the curve
-    //this.Ax = (complete this line)
-    //this.Ay = (complete this line)
+    this.Ax = this.B.multiplyVector(this.ctrlX);
+    this.Ay = this.B.multiplyVector(this.ctrlY);
     var context = canvas.getContext('2d');
 
     // clear the canvas
@@ -36,15 +36,15 @@ Splines.prototype.render = function(canvas, w, h)
     }
     context.fill();
 
-    //// draw dots on the curve using direct evalution (red dots)
-    //// After completing Task 1, uncomment this block.
-    //context.beginPath();
-    //context.fillStyle = 'red';
-    //for (t = 0.05; t < 1.0; t += 0.1) {
-      //pt = this.eval_direct(t);
-      //context.fillRect(pt[0]-1, pt[1]-1, 3, 3);
-    //}
-    //context.fill();
+    // draw dots on the curve using direct evalution (red dots)
+    // After completing Task 1, uncomment this block.
+    context.beginPath();
+    context.fillStyle = 'red';
+    for (t = 0.05; t < 1.0; t += 0.1) {
+      pt = this.eval_direct(t);
+      context.fillRect(pt[0]-1, pt[1]-1, 3, 3);
+    }
+    context.fill();
 
     //// After completing Task 2, uncomment this block:
     //// draw dots on the curve using de Casteljau's algorithm (green dots)
@@ -70,9 +70,12 @@ Splines.prototype.render = function(canvas, w, h)
 Splines.prototype.eval_direct = function(t) {
   // Task 1c: implement this method
 
-  // your code here
+  var ax = this.Ax;
+  var ay = this.Ay;
+  var px = ax[0] + t * ax[1] + t*t*ax[2] + t*t*t*ax[3];
+  var py = ay[0] + t * ay[1] + t*t*ay[2] + t*t*t*ay[3];
 
-  //return [px, py];
+  return [px, py];
 }
 
 /* Helper: return a linearly interpolated value between x and y.
